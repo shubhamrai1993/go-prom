@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: go-prom
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "2112"
+  name: go-prom
+spec:
+  selector:
+    matchLabels:
+      app: go-prom
+  template:
+    metadata:
+      labels:
+        app: go-prom
+      name: go-prom
+    spec:
+      containers:
+        - image: go-prom:1.0.0
+          name: go-prom
+          ports:
+            - containerPort: 2112
+              name: metrics
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: go-prom
+  name: go-prom
+spec:
+  selector:
+    app: go-prom
+  ports:
+    - name: metrics
+      protocol: TCP
+      port: 2112
+      targetPort: 2112
